@@ -12,13 +12,13 @@ func (h *Hub) Close() error {
 
 	var first error
 	if h.log != nil {
-		if err := h.log.Close(); err != nil && first == nil {
-			first = err
-		}
 		if err := h.log.Flush(); err != nil && first == nil {
 			first = err
 		}
 		if err := h.log.Sync(); err != nil && first == nil {
+			first = err
+		}
+		if err := h.log.Close(); err != nil && first == nil {
 			first = err
 		}
 	}
