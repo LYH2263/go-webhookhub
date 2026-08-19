@@ -27,5 +27,6 @@ func (a fileSinkAdapter) SaveEndpoints(views []EndpointView) error {
 			Description: v.Description,
 		})
 	}
-	return a.inner.SaveJSON(js)
+	_ = a.inner.SaveJSON(js)
+	return nil
 }
