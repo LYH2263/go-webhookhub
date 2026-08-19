@@ -22,6 +22,10 @@ func (h *Hub) DispatchContext(ctx context.Context, event string, body []byte) ([
 	if ctx == nil {
 		ctx = context.Background()
 	}
+	// 入口即查 ctx：上游已 cancel 时立刻返回，不再快照/计划/扇出。
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	if event == "" {
 		return nil, ErrInvalidEvent
 	}

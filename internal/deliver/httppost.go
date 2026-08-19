@@ -47,6 +47,11 @@ func (p *Poster) Post(ctx context.Context, in Request) Result {
 	if ctx == nil {
 		ctx = context.Background()
 	}
+	// ctx 已取消：不再发起 HTTP，直接返回取消结果，避免对已死 ctx 仍走 RoundTrip。
+	if err := ctx.Err(); err != nil {
+		res.Err = err.Error()
+		return res
+	}
 	if p == nil || p.Client == nil {
 		cause := ierr.Wrap(ierr.ErrHTTP, "nil client")
 		res.Cause = cause
