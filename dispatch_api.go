@@ -43,6 +43,10 @@ func (h *Hub) DispatchContext(ctx context.Context, event string, body []byte) ([
 		h.mu.Unlock()
 		return nil, ErrClosed
 	}
+	if deps.signer == nil {
+		h.mu.Unlock()
+		return nil, ErrNilSigner
+	}
 	bodyCopy := payload.CloneBytes(body)
 	targets := h.reg.Match(event)
 	h.dispatches++

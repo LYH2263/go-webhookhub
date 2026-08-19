@@ -26,7 +26,6 @@ func (h *Hub) Close() error {
 		h.client.CloseIdle()
 	}
 	h.client = nil
-	h.signer = nil
 	return first
 }
 

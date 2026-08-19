@@ -58,6 +58,9 @@ func (p *Poster) Post(ctx context.Context, in Request) Result {
 		return res
 	}
 	signer := p.Signer
+	if signer == nil {
+		signer = sign.Default()
+	}
 
 	ts := p.now()
 	wire, err := payload.Wrap(in.DeliveryID, in.Event, ts, in.Attempt, in.Body)
