@@ -19,16 +19,6 @@ func Fanout(ctx context.Context, jobs []Job, poster *deliver.Poster, pol retry.P
 	out := make([]deliver.Result, 0, len(jobs))
 	var first error
 	for _, job := range jobs {
-		if err := ctx.Err(); err != nil {
-			if first == nil {
-				first = err
-			}
-			out = append(out, cancelResult(job, err))
-			if failFast {
-				return out, err
-			}
-			continue
-		}
 		res := runJob(ctx, job, poster, pol)
 		out = append(out, res)
 		if !res.OK && first == nil {
@@ -62,21 +52,6 @@ func runJob(ctx context.Context, job Job, poster *deliver.Poster, pol retry.Poli
 	var last deliver.Result
 	start := time.Now()
 	for attempt := 1; attempt <= max; attempt++ {
-		if err := ctx.Err(); err != nil {
-			last.Err = err.Error()
-			last.OK = false
-			last.Attempts = attempt - 1
-			if last.Attempts < 1 {
-				last.Attempts = 1
-			}
-			last.Duration = time.Since(start)
-			last.EndpointID = job.EndpointID
-			last.URL = job.URL
-			last.Event = job.Event
-			last.DeliveryID = job.DeliveryID
-			last.RequestID = job.RequestID
-			return last
-		}
 		req := deliver.Request{
 			URL:        job.URL,
 			Secret:     job.Secret,

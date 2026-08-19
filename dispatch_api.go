@@ -22,9 +22,6 @@ func (h *Hub) DispatchContext(ctx context.Context, event string, body []byte) ([
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
 	if event == "" {
 		return nil, ErrInvalidEvent
 	}
