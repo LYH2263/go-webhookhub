@@ -139,7 +139,8 @@ func (l *Log) Sync() error {
 	return nil
 }
 
-// Close 先 Flush、Sync，再关闭文件。之后 Append 被忽略。
+// Close 关闭底层文件句柄。调用前必须先 Flush+Sync，否则 bufio 缓冲里尚未
+// 落盘的记录会随 writer 置 nil 而丢失。之后 Append 被忽略。
 func (l *Log) Close() error {
 	if l == nil {
 		return nil

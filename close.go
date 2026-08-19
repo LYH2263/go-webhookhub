@@ -12,13 +12,16 @@ func (h *Hub) Close() error {
 
 	var first error
 	if h.log != nil {
-		if err := h.log.Close(); err != nil && first == nil {
-			first = err
-		}
+		// 先落盘再释放：Flush 把 bufio 缓冲写到底层文件，Sync 落盘，
+		// 最后 Close 关闭句柄。顺序反了（先 Close）会把 writer 置 nil、
+		// 关闭文件，缓冲里最后几条记录就此丢失。
 		if err := h.log.Flush(); err != nil && first == nil {
 			first = err
 		}
 		if err := h.log.Sync(); err != nil && first == nil {
+			first = err
+		}
+		if err := h.log.Close(); err != nil && first == nil {
 			first = err
 		}
 	}
