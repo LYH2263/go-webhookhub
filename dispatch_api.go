@@ -30,11 +30,19 @@ func (h *Hub) DispatchContext(ctx context.Context, event string, body []byte) ([
 	}
 
 	h.mu.Lock()
+	if err := h.checkOpenLocked(); err != nil {
+		h.mu.Unlock()
+		return nil, err
+	}
 	if !h.emptyBodyOK && len(body) == 0 {
 		h.mu.Unlock()
 		return nil, ErrEmptyBody
 	}
 	deps := h.snapshotLocked()
+	if deps.client == nil {
+		h.mu.Unlock()
+		return nil, ErrClosed
+	}
 	if deps.signer == nil {
 		h.mu.Unlock()
 		return nil, ErrNilSigner

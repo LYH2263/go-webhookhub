@@ -51,6 +51,12 @@ func (p *Poster) Post(ctx context.Context, in Request) Result {
 		res.Err = err.Error()
 		return res
 	}
+	if p == nil || p.Client == nil {
+		cause := ierr.Wrap(ierr.ErrHTTP, "nil client")
+		res.Cause = cause
+		res.Err = cause.Error()
+		return res
+	}
 	signer := p.Signer
 	if signer == nil {
 		signer = sign.Default()

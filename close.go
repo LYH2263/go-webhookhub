@@ -22,8 +22,10 @@ func (h *Hub) Close() error {
 			first = err
 		}
 	}
+	if h.client != nil {
+		h.client.CloseIdle()
+	}
 	h.client = nil
-	h.transport = nil
 	return first
 }
 
