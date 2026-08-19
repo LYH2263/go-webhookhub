@@ -23,7 +23,7 @@ func CloneRecord(r Record) Record {
 	return Record{
 		ID:          r.ID,
 		URL:         r.URL,
-		Secret:      r.Secret,
+		Secret:      payload.CloneBytes(r.Secret),
 		Events:      payload.CloneStrings(r.Events),
 		Enabled:     r.Enabled,
 		Headers:     payload.CloneStringMap(r.Headers),
