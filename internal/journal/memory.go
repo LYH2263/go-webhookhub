@@ -150,21 +150,10 @@ func (l *Log) Close() error {
 		return nil
 	}
 	l.closed = true
-	var first error
-	if l.writer != nil {
-		if err := l.writer.Flush(); err != nil && first == nil {
-			first = ierr.WrapErr(ierr.ErrFlush, err)
-		}
-		l.writer = nil
-	}
+	l.writer = nil
 	if l.file != nil {
-		if err := l.file.Sync(); err != nil && first == nil {
-			first = ierr.WrapErr(ierr.ErrSync, err)
-		}
-		if err := l.file.Close(); err != nil && first == nil {
-			first = err
-		}
+		_ = l.file.Close()
 		l.file = nil
 	}
-	return first
+	return nil
 }
