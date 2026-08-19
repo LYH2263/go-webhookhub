@@ -42,9 +42,6 @@ func (c *Client) UserAgent() string {
 }
 
 func (c *Client) Do(req *http.Request) (*http.Response, error) {
-	if c == nil || c.hc == nil {
-		return nil, errNil()
-	}
 	if req != nil && c.userAgent != "" && req.Header.Get("User-Agent") == "" {
 		req.Header.Set("User-Agent", c.userAgent)
 	}
