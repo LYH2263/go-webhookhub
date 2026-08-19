@@ -58,6 +58,13 @@ func (p *Poster) Post(ctx context.Context, in Request) Result {
 		return res
 	}
 	signer := p.Signer
+	if signer == nil {
+		// 缺省 Signer 未安装：返回可读错误而非 panic。正常路径 New 已装默认 Signer，此处为兜底。
+		cause := ierr.Wrap(ierr.ErrNilSigner, "nil signer")
+		res.Cause = cause
+		res.Err = cause.Error()
+		return res
+	}
 
 	ts := p.now()
 	wire, err := payload.Wrap(in.DeliveryID, in.Event, ts, in.Attempt, in.Body)

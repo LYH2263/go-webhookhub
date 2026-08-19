@@ -81,6 +81,11 @@ func New(opts ...Option) *Hub {
 	if h.clk == nil {
 		h.clk = clock.Real{}
 	}
+	// 选项跑完后若 signer 仍为空则安装默认 HMAC-SHA256，
+	// 否则 Poster.Post 调用 signer.HeaderValue 会 nil deref panic。
+	if h.signer == nil {
+		h.signer = sign.Default()
+	}
 	if h.maxAttempts < 1 {
 		h.maxAttempts = 1
 	}
