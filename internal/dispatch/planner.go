@@ -10,6 +10,7 @@ import (
 
 // Plan 把匹配到的端点编成有序 Job 列表。body 再拷一次，避免与调用方/库存共享。
 func Plan(event string, body []byte, targets []endpoint.Record, defaultAttempts int, defaultTimeout time.Duration) []Job {
+	body = payload.CloneBytes(body)
 	if defaultAttempts < 1 {
 		defaultAttempts = 1
 	}
@@ -35,7 +36,7 @@ func Plan(event string, body []byte, targets []endpoint.Record, defaultAttempts 
 			EndpointID:  t.ID,
 			URL:         t.URL,
 			Event:       event,
-			Body:        body,
+			Body:        payload.CloneBytes(body),
 			Secret:      payload.CloneBytes(t.Secret),
 			Headers:     payload.CloneStringMap(t.Headers),
 			Timeout:     to,
