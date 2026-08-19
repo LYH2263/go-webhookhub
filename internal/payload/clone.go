@@ -7,7 +7,12 @@ import (
 
 // CloneBytes 复制切片。nil 保持 nil，避免调用方改库存或投递缓冲。
 func CloneBytes(b []byte) []byte {
-	return b
+	if b == nil {
+		return nil
+	}
+	out := make([]byte, len(b))
+	copy(out, b)
+	return out
 }
 
 // CloneBytesNonNil 空输入也返回长度为 0 的新切片。
