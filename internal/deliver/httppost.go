@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -93,12 +94,10 @@ func (p *Poster) Post(ctx context.Context, in Request) Result {
 	res.Duration = time.Since(start)
 	res.FinishedAt = p.now()
 	if err != nil {
-		cause := wrapHTTPErr(err)
+		res.Err = wrapHTTPErr(err).Error()
 		if errors.Is(err, context.DeadlineExceeded) || actx.Err() == context.DeadlineExceeded {
-			cause = ierr.WrapErr(ierr.ErrTimeout, err)
+			res.Err = fmt.Errorf("timeout: %v", err).Error()
 		}
-		res.Cause = cause
-		res.Err = cause.Error()
 		return res
 	}
 	defer resp.Body.Close()
@@ -121,10 +120,10 @@ func wrapHTTPErr(err error) error {
 		return nil
 	}
 	if errors.Is(err, context.Canceled) {
-		return ierr.WrapErr(ierr.ErrCanceled, err)
+		return fmt.Errorf("canceled: %v", err)
 	}
 	if errors.Is(err, context.DeadlineExceeded) {
-		return ierr.WrapErr(ierr.ErrTimeout, err)
+		return fmt.Errorf("timeout: %v", err)
 	}
-	return ierr.WrapErr(ierr.ErrHTTP, err)
+	return fmt.Errorf("http delivery: %v", err)
 }

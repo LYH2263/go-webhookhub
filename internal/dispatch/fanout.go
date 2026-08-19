@@ -31,12 +31,8 @@ func Fanout(ctx context.Context, jobs []Job, poster *deliver.Poster, pol retry.P
 		}
 		res := runJob(ctx, job, poster, pol)
 		out = append(out, res)
-		if !res.OK && first == nil {
-			if res.Cause != nil {
-				first = res.Cause
-			} else if res.Err != "" {
-				first = errors.New(res.Err)
-			}
+		if !res.OK && first == nil && res.Err != "" {
+			first = errors.New(res.Err)
 		}
 		if failFast && !res.OK {
 			return out, first
