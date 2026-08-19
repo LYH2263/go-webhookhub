@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Webhook 投递中心</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Webhook 投递中心</h1>
+    <p>注册端点 · 按事件扇出 · HMAC-SHA256 签名投递</p>
+  </header>
+  <main>
+    <section class="panel">
+      <h2>端点</h2>
+      <form id="ep-form">
+        <input id="ep-url" placeholder="https://example.com/hook" required />
+        <input id="ep-secret" placeholder="HMAC 密钥" />
+        <input id="ep-events" placeholder="事件，如 order.* 或 *" value="*" />
+        <label class="row"><input id="ep-enabled" type="checkbox" checked /> 启用</label>
+        <button type="submit">注册</button>
+      </form>
+      <ul id="ep-list"></ul>
+    </section>
+    <section class="panel">
+      <h2>触发投递</h2>
+      <p id="stats-line" class="muted">—</p>
+      <form id="dispatch-form">
+        <input id="ev-name" placeholder="事件名，如 order.created" required />
+        <textarea id="ev-body" rows="8" placeholder='{"id":1}'>{"hello":"webhook"}</textarea>
+        <button type="submit">Dispatch</button>
+      </form>
+      <pre id="dispatch-out" class="out"></pre>
+    </section>
+    <section class="panel">
+      <h2>最近投递</h2>
+      <ul id="del-list"></ul>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
