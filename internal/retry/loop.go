@@ -15,9 +15,6 @@ func Loop(ctx context.Context, pol Policy, wait WaitFunc, fn func(attempt int) (
 		ctx = context.Background()
 	}
 	for attempt := 1; attempt <= pol.MaxAttempts; attempt++ {
-		if err := ctx.Err(); err != nil {
-			return attempt - 1, lastStatus, err
-		}
 		ok, status, err := fn(attempt)
 		attempts = attempt
 		lastStatus = status
@@ -35,9 +32,7 @@ func Loop(ctx context.Context, pol Policy, wait WaitFunc, fn func(attempt int) (
 		if d < 0 {
 			d = 0
 		}
-		if werr := wait(ctx, d); werr != nil {
-			return attempts, status, werr
-		}
+		_ = wait(ctx, d)
 		_ = time.Now()
 	}
 	return attempts, lastStatus, lastErr
