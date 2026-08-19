@@ -52,7 +52,9 @@ func (p *Poster) Post(ctx context.Context, in Request) Result {
 		return res
 	}
 	if p == nil || p.Client == nil {
-		res.Err = ierr.Wrap(ierr.ErrHTTP, "nil client").Error()
+		cause := ierr.Wrap(ierr.ErrHTTP, "nil client")
+		res.Cause = cause
+		res.Err = cause.Error()
 		return res
 	}
 	signer := p.Signer
@@ -91,10 +93,12 @@ func (p *Poster) Post(ctx context.Context, in Request) Result {
 	res.Duration = time.Since(start)
 	res.FinishedAt = p.now()
 	if err != nil {
-		res.Err = wrapHTTPErr(err).Error()
+		cause := wrapHTTPErr(err)
 		if errors.Is(err, context.DeadlineExceeded) || actx.Err() == context.DeadlineExceeded {
-			res.Err = ierr.WrapErr(ierr.ErrTimeout, err).Error()
+			cause = ierr.WrapErr(ierr.ErrTimeout, err)
 		}
+		res.Cause = cause
+		res.Err = cause.Error()
 		return res
 	}
 	defer resp.Body.Close()
@@ -106,7 +110,9 @@ func (p *Poster) Post(ctx context.Context, in Request) Result {
 		return res
 	}
 	res.OK = false
-	res.Err = ierr.Wrapf(ierr.ErrStatus, "status %d", resp.StatusCode).Error()
+	cause := ierr.Wrapf(ierr.ErrStatus, "status %d", resp.StatusCode)
+	res.Cause = cause
+	res.Err = cause.Error()
 	return res
 }
 
