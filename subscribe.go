@@ -29,7 +29,10 @@ func (h *Hub) Subscribe(ep Endpoint) (string, error) {
 		return "", err
 	}
 	if h.sink != nil {
-		_ = h.sink.SaveEndpoints(h.viewsLocked())
+		if err := h.sink.SaveEndpoints(h.viewsLocked()); err != nil {
+			_ = h.reg.Remove(id)
+			return "", err
+		}
 	}
 	return id, nil
 }
