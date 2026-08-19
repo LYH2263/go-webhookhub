@@ -80,7 +80,7 @@ func recordToView(r endpoint.Record) EndpointView {
 		Events:      payload.CloneStrings(r.Events),
 		Enabled:     r.Enabled,
 		SecretLen:   len(r.Secret),
-		Secret:      r.Secret,
+		Secret:      payload.CloneBytes(r.Secret),
 		Headers:     payload.CloneStringMap(r.Headers),
 		Timeout:     r.Timeout,
 		MaxAttempts: r.MaxAttempts,
