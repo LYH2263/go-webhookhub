@@ -72,7 +72,6 @@ func New(opts ...Option) *Hub {
 		maxEndpoints:  defaultMaxEP,
 		userAgent:     DefaultUA,
 		allowHTTP:     true,
-		signer:        sign.Default(),
 	}
 	for _, o := range opts {
 		if o != nil {
@@ -81,9 +80,6 @@ func New(opts ...Option) *Hub {
 	}
 	if h.clk == nil {
 		h.clk = clock.Real{}
-	}
-	if h.signer == nil {
-		h.signer = sign.Default()
 	}
 	if h.maxAttempts < 1 {
 		h.maxAttempts = 1
