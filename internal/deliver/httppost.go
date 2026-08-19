@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"time"
 
@@ -100,7 +101,8 @@ func (p *Poster) Post(ctx context.Context, in Request) Result {
 		res.Err = cause.Error()
 		return res
 	}
-	DrainAndClose(resp)
+	defer resp.Body.Close()
+	_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 1<<20))
 
 	res.StatusCode = resp.StatusCode
 	if httpx.Success(resp.StatusCode) {

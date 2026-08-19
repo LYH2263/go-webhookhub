@@ -13,4 +13,5 @@ func DrainAndClose(resp *http.Response) {
 		return
 	}
 	_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, maxDrain))
+	_ = resp.Body.Close()
 }
