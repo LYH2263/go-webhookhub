@@ -47,6 +47,10 @@ func (p *Poster) Post(ctx context.Context, in Request) Result {
 	if ctx == nil {
 		ctx = context.Background()
 	}
+	if err := ctx.Err(); err != nil {
+		res.Err = err.Error()
+		return res
+	}
 	if p == nil || p.Client == nil {
 		cause := ierr.Wrap(ierr.ErrHTTP, "nil client")
 		res.Cause = cause
